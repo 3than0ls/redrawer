@@ -6,7 +6,6 @@ import win32gui
 import win32con
 import win32api
 from collections import namedtuple
-
 import ctypes
 
 BoundingRect = namedtuple("BoundingRect", ["x", "y", "width", "height"])
@@ -92,6 +91,11 @@ class PaintWindow:
         if self._monitor_dpi_aware is False:
             raise DPIUnawareError
 
+    def _check_valid(self) -> None:
+        """Checks if PaintWindow is valid, and can be fully interacted with using subclasses."""
+        self._check_window_exists()
+        self._check_monitor_dpi_aware()
+
     def initialize_window(self) -> None:
         """Utilize subprocess.Popen to start ms-paint. Opens path found in `settings.json['paint_path']`. Waits 0.25 seconds before attempting to find the Paint window."""
         subprocess.Popen(['cmd', '/c', 'start', '/max', self._paint_path])
@@ -129,3 +133,4 @@ if __name__ == '__main__':
     p = PaintWindow()
     p.initialize_window()
     p.modify()
+    print(p.window_rect())

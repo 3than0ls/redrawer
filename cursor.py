@@ -14,8 +14,8 @@ class CursorOutOfWindowError(Exception):
             dimension} value of cursor was is outside the bounds of the Paint window.""")
 
 
-class Interactions:
-    """Directly interacts with the mouse."""
+class Cursor:
+    """Directly interacts with the mouse/cursor position."""
 
     def __init__(self, window: PaintWindow) -> None:
         naive_win_rect = window.window_rect()
@@ -58,7 +58,7 @@ class Interactions:
 if __name__ == '__main__':
     p = PaintWindow()
     p.initialize_window()
-    i = Interactions(p)
-    time.sleep(2)
+    i = Cursor(p)
+    time.sleep(0.7)
 
-    i.cursor = Point(100, 400)
+    i.cursor = Point(800, 100)
