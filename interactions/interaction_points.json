@@ -1,0 +1,149 @@
+{
+    "Toolbar": {
+        "resize": {
+            "button": [
+                205,
+                100
+            ],
+            "menu": {
+                "pixels_button": [
+                    250,
+                    205
+                ],
+                "horizontal": [
+                    260,
+                    250
+                ],
+                "vertical": [
+                    260,
+                    305
+                ],
+                "ok": [
+                    175,
+                    610
+                ]
+            }
+        },
+        "stroke_size": {
+            "button": [
+                735,
+                110
+            ],
+            "menu": {
+                "1": [
+                    785,
+                    170
+                ],
+                "2": [
+                    785,
+                    220
+                ],
+                "3": [
+                    785,
+                    270
+                ],
+                "4": [
+                    785,
+                    320
+                ]
+            }
+        },
+        "bucket": [
+            315,
+            90
+        ],
+        "color_1": [
+            795,
+            90
+        ],
+        "color_2": [
+            855,
+            90
+        ],
+        "colors_option": {
+            "top-left": [
+                890,
+                75
+            ],
+            "offset": 27
+        },
+        "edit_colors": {
+            "button": [
+                1165,
+                90
+            ],
+            "menu": {
+                "red": [
+                    1205,
+                    605
+                ],
+                "green": [
+                    1205,
+                    630
+                ],
+                "blue": [
+                    1205,
+                    655
+                ],
+                "add_to_custom": [
+                    1120,
+                    690
+                ],
+                "ok": [
+                    710,
+                    690
+                ]
+            }
+        },
+        "brushes": {
+            "button": [
+                380,
+                90
+            ],
+            "menu": {
+                "brush": [
+                    390,
+                    170
+                ],
+                "calligraphy_brush_1": [
+                    440,
+                    170
+                ],
+                "calligraphy_brush_2": [
+                    490,
+                    170
+                ],
+                "airbrush": [
+                    540,
+                    170
+                ],
+                "oil_brush": [
+                    390,
+                    230
+                ],
+                "crayon": [
+                    440,
+                    230
+                ],
+                "marker": [
+                    490,
+                    230
+                ],
+                "natural_pencil": [
+                    540,
+                    230
+                ],
+                "watercolor_brush": [
+                    390,
+                    270
+                ]
+            }
+        }
+    },
+    "Canvas": {
+        "top-left": [
+            5,
+            175
+        ]
+    }
+}
