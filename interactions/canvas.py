@@ -1,10 +1,6 @@
 from cursor import Point
-from interactions.universals import UniversalInteractionsHeader, INTERACTION_POINTS
+from interactions.universals import UniversalInteractionsHeader
 from dataclasses import dataclass
-
-
-_CANVAS = INTERACTION_POINTS["Canvas"]
-_TOP_LEFT = _CANVAS["top-left"]
 
 
 class CanvasInteractions(UniversalInteractionsHeader):

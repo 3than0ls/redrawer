@@ -2,10 +2,11 @@ from window import PaintWindow, BoundingRect
 from cursor import Cursor, Point
 from interactions.toolbar import ToolbarInteractions
 from interactions.canvas import CanvasInteractions
-from pynput import mouse, keyboard
-
+from pynput import keyboard
+import time
 
 # Use InteractiosnManager
+
 
 class InteractionsManager(ToolbarInteractions, CanvasInteractions):
     r"""
@@ -39,8 +40,19 @@ class InteractionsManager(ToolbarInteractions, CanvasInteractions):
         self._keyboard = keyboard.Controller()
 
     def _move(self, point: Point) -> None:
+        """Declared in interactions.universals.py"""
         self._mouse.position = point
 
-    def _click(self, point: Point) -> None:
+    def _click(self, point: Point | tuple[int, int], *, pre_delay: int | float = 0, post_delay: int | float = 0.005) -> None:
+        """Declared in interactions.universals.py"""
+        # execute pre-delay
+        time.sleep(pre_delay)
+
+        if type(point) is not Point:
+            point = Point(*point)
+
         self._move(point)
         self._mouse.click()
+
+        # execute post-delay
+        time.sleep(post_delay)

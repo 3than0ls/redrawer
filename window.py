@@ -39,6 +39,8 @@ class PaintWindow:
     ACTION_DELAY = 0.5
     WINDOW_TEXT = 'Untitled - Paint'
 
+    _DEV = True
+
     def __init__(self, paint_path: Path | None = None) -> None:
         if paint_path is None:
             with open(r'settings.json') as f:
@@ -67,7 +69,7 @@ class PaintWindow:
         # if there's currently no paint window, or more than 2, something went wrong and error out
         if len(results) == 0:
             raise NoPaintWindowsError
-        elif len(results) >= 2:
+        elif len(results) >= 2 and not PaintWindow._DEV:
             raise MultiplePaintWindowsError(len(results))
 
         # Next, after making it this far, set DPI awareness to per monitor dpi aware (2)

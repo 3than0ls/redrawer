@@ -4,10 +4,6 @@ from pynput import keyboard
 from pathlib import Path
 import json
 
-with open(Path('./interactions/interaction_points.json')) as f:
-    # all units in pixels
-    INTERACTION_POINTS = IP = json.load(f)
-
 
 class UniversalInteractionsHeader:
     """Declares universally used properties and methods for the Toolbar and Canvas interaction subclasses, but are not defined until InteractionManager is created. 
@@ -23,8 +19,10 @@ class UniversalInteractionsHeader:
         self._mouse: Cursor
         self._keyboard: keyboard.Controller
 
-    def _click(self, point: Point) -> None:
-        """Move a mouse to a Point position, and left-click once."""
+    def _click(self, point: Point | tuple[int, int], *, pre_delay: int | float = 0, post_delay: int | float = 0.005) -> None:
+        """Move a mouse to a Point position, and left-click once. If tuple of length 2 is passed in, automatically convert it into a Point object. 
+        Then, sleep for at least `post_delay` seconds, depending on how slow the system may be.
+        Optionally also specify `pre_delay` in seconds, to delay a certain amount of time before clicking."""
         pass
 
     def _move_cursor(self, point: Point) -> None:
