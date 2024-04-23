@@ -11,6 +11,15 @@ TOOLBAR_DROPDOWN_DELAY = 0.4
 
 # ----- Toolbar related constants -----
 TOOLBAR = IP["Toolbar"]
+# --- Resize
+RESIZE_BUTTON: tuple[int, int] = TOOLBAR["resize"]["button"]
+RESIZE_MENU_PIXELS: tuple[int,
+                          int] = TOOLBAR["resize"]["menu"]["pixels_button"]
+RESIZE_MENU_H: tuple[int, int] = TOOLBAR["resize"]["menu"]["horizontal"]
+RESIZE_MENU_V: tuple[int, int] = TOOLBAR["resize"]["menu"]["vertical"]
+RESIZE_MENU_MAINTAIN_ASPECT: tuple[int,
+                                   int] = TOOLBAR["resize"]["menu"]["maintain_aspect"]
+RESIZE_MENU_OK: tuple[int, int] = TOOLBAR["resize"]["menu"]["ok"]
 # --- Color palette and custom options
 COLOR_OPTIONS_TOP_LEFT: tuple[int, int] = TOOLBAR["colors_option"]["top-left"]
 COLOR_OPTIONS_OFFSET: int = TOOLBAR["colors_option"]["offset"]
@@ -43,4 +52,6 @@ STROKE_SIZES: dict[str, tuple[int, int]] = TOOLBAR["stroke_size"]["menu"]
 
 # ----- Canvas related constants -----
 CANVAS = INTERACTION_POINTS["Canvas"]
-CANVAS_TOP_LEFT = CANVAS["top-left"]
+CANVAS_TOP_LEFT: tuple[int, int] = CANVAS["top-left"]
+CANVAS_BOTTOM_PADDING: int = CANVAS["bottom-padding"]
+CANVAS_RIGHT_PADDING: int = CANVAS["right-padding"]

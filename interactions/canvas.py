@@ -8,3 +8,6 @@ class CanvasInteractions(UniversalInteractionsHeader):
         super().__init__()
 
     # def draw stuff and whatnot
+
+    # TODO: add a get max canvas size function, based on bottom and right padding constants
+    # perhaps make it a part of the manager?

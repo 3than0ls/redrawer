@@ -18,7 +18,7 @@ class InteractionsManager(ToolbarInteractions, CanvasInteractions):
                             UniversalInteractionsHeader   <--------------------\
                                        |                                        |
                                        | < provides universal declarations      |
-                                       |           that are used by ..          |
+                                       |           that are used by all         |
                  ______________________|_______________                         |
                 /                                      \                        |
         ToolbarInteractions                   CanvasInteractions                |
@@ -35,6 +35,7 @@ class InteractionsManager(ToolbarInteractions, CanvasInteractions):
 
     def __init__(self, window: PaintWindow) -> None:
         self._window = window
+        self._bounding_rect = window.window_rect()
 
         self._mouse = Cursor(window)
         self._keyboard = keyboard.Controller()
@@ -43,7 +44,7 @@ class InteractionsManager(ToolbarInteractions, CanvasInteractions):
         """Declared in interactions.universals.py"""
         self._mouse.position = point
 
-    def _click(self, point: Point | tuple[int, int], *, pre_delay: int | float = 0, post_delay: int | float = 0.005) -> None:
+    def _click(self, point: Point | tuple[int, int], *, num_clicks: int = 1, pre_delay: int | float = 0, post_delay: int | float = 0.005) -> None:
         """Declared in interactions.universals.py"""
         # execute pre-delay
         time.sleep(pre_delay)
@@ -52,7 +53,7 @@ class InteractionsManager(ToolbarInteractions, CanvasInteractions):
             point = Point(*point)
 
         self._move(point)
-        self._mouse.click()
+        self._mouse.click(num_clicks)
 
         # execute post-delay
         time.sleep(post_delay)

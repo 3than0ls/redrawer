@@ -19,10 +19,11 @@ class UniversalInteractionsHeader:
         self._mouse: Cursor
         self._keyboard: keyboard.Controller
 
-    def _click(self, point: Point | tuple[int, int], *, pre_delay: int | float = 0, post_delay: int | float = 0.005) -> None:
+    def _click(self, point: Point | tuple[int, int], *, num_clicks: int = 1, pre_delay: int | float = 0, post_delay: int | float = 0.005) -> None:
         """Move a mouse to a Point position, and left-click once. If tuple of length 2 is passed in, automatically convert it into a Point object. 
         Then, sleep for at least `post_delay` seconds, depending on how slow the system may be.
-        Optionally also specify `pre_delay` in seconds, to delay a certain amount of time before clicking."""
+        Optionally also specify `pre_delay` in seconds, to delay a certain amount of time before clicking.
+        Optinally pass `num_clicks` to click more than once."""
         pass
 
     def _move_cursor(self, point: Point) -> None:

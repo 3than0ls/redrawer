@@ -2,7 +2,20 @@ from cursor import Point
 from interactions.universals import UniversalInteractionsHeader
 from dataclasses import dataclass
 import interactions.constants as C
-import time
+from window import BoundingRect
+from pynput.keyboard import Key
+
+
+class ResizeNotFitWindowError(Exception):
+    """Raised when the canvas is attempted to be resized a size that exceeds canvas dimensions."""
+
+    def __init__(self, width: int, height: int, window_size: BoundingRect):
+        canvas_width = window_size.width - \
+            C.CANVAS_TOP_LEFT[0] - C.CANVAS_RIGHT_PADDING
+        canvas_height = window_size.height - \
+            C.CANVAS_TOP_LEFT[1] - C.CANVAS_BOTTOM_PADDING
+        super().__init__(f"""Cannot resize canvas to size of {width}x{
+            height} without requiring scrollbar. Maximum possible size for canvas is {canvas_width}x{canvas_height}.""")
 
 
 @dataclass
@@ -42,9 +55,32 @@ class ToolbarInteractions(UniversalInteractionsHeader):
     def set_palette(self, palette: "Palette") -> None:
         pass
 
+    def _ensure_resize_fits(self, width: int, height: int) -> bool:
+        """Ensure resize is not greater than the size of the screen, or _window_rect. For this, we'll use constant paddings. 
+        A more accurate solutions would be to use paddings based off of the actual available canvas size, 
+        which ends above the bottom information bar. Perhaps in future do this."""
+        return \
+            width <= self._bounding_rect.width - C.CANVAS_TOP_LEFT[0] - C.CANVAS_RIGHT_PADDING \
+            and \
+            height <= self._bounding_rect.height - \
+            C.CANVAS_TOP_LEFT[1] - C.CANVAS_BOTTOM_PADDING
+
     def resize(self, width: int, height: int) -> None:
-        """Ensure resize is not greater than the size of the screen, or _window_rect"""
-        pass
+        """Resize the canvas to a given `width` and `height`. Both dimensions must be small enough so that no scrollbar effect appears."""
+        if not self._ensure_resize_fits(width, height):
+            raise ResizeNotFitWindowError(width, height, self._bounding_rect)
+
+        self._click(C.RESIZE_BUTTON, pre_delay=C.TOOLBAR_DROPDOWN_DELAY)
+        self._click(C.RESIZE_MENU_PIXELS)
+        self._click(C.RESIZE_MENU_MAINTAIN_ASPECT)
+        self._click(C.RESIZE_MENU_H, num_clicks=2)
+        self._keyboard.tap(Key.delete)
+        self._keyboard.type(str(width))
+        self._click(C.RESIZE_MENU_V, num_clicks=2)
+        self._keyboard.tap(Key.delete)
+        self._keyboard.type(str(height))
+        self._keyboard.tap(Key.enter)
+        # self._click(C.RESIZE_MENU_OK, post_delay=C.TOOLBAR_DROPDOWN_DELAY)
 
     def click_bucket(self) -> None:
         """Click the bucket button."""

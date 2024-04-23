@@ -51,9 +51,9 @@ class Cursor:
         self._cursor_pos = Point(new_x, new_y)
         self._mouse.position = self._cursor_pos
 
-    def click(self) -> None:
-        """Click the left mouse button once."""
-        self._mouse.click(pynmouse.Button.left, 1)
+    def click(self, num_clicks: int = 1) -> None:
+        """Click the left mouse button once. Optionally specify number of clicks, defaults to one."""
+        self._mouse.click(pynmouse.Button.left, num_clicks)
 
 
 if __name__ == '__main__':

@@ -18,6 +18,10 @@
                     260,
                     305
                 ],
+                "maintain_aspect": [
+                    80,
+                    350
+                ],
                 "ok": [
                     175,
                     610
@@ -148,6 +152,8 @@
         "top-left": [
             5,
             175
-        ]
+        ],
+        "bottom-padding": 40,
+        "right-padding": 6
     }
 }
