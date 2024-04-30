@@ -5,10 +5,18 @@ from interactions.canvas import CanvasInteractions
 from pynput import keyboard
 import time
 
-# Use InteractiosnManager
+
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in Singleton._instances:
+            cls._instances[cls] = super(
+                Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
 
 
-class InteractionsManager(ToolbarInteractions, CanvasInteractions):
+class InteractionsManager(ToolbarInteractions, CanvasInteractions, metaclass=Singleton):
     r"""
     Here, inherit all methods from ToolbarInteractions and CanvasInteractions, whilst also defining methods used by both here.
      Neither individual interaction classes will be used other than for InteractionsManager, so we need not worry about any issues about defining these universal methods may cause.
@@ -26,11 +34,16 @@ class InteractionsManager(ToolbarInteractions, CanvasInteractions):
                                     |                                           |           that are used by ..
                            InteractionsManager                                  |
                                     |                                           |
-                      (certain defined properties and methods) ----------------/
+                      (defined needed instance properties in init) -------------/
     ```
-     They are codependent, relying on each other for functionality, and incapable of working without each other. Designed this way so I don't have one mega-class, and I can split them up.
-     This is akin to some form of cooperative inheritance.
-     Dubious code practices.
+     The idea behind this is that I can write the code for Toolbar and Canvas interactions in seperate classes, even though they rely on attributes that are only defined in InteractionsManager
+     I also need one single class/point to access all of it from.
+
+
+     NEW IDEA:
+
+     Perhaps only have GrandSuperClass (currently UnivInterHeader), then create and define all T and C interactions, 
+     then dynamically add each non-superclass method from the two subclasses back into the GrandSuperClass
      """
 
     def __init__(self, window: PaintWindow) -> None:
@@ -39,21 +52,3 @@ class InteractionsManager(ToolbarInteractions, CanvasInteractions):
 
         self._mouse = Cursor(window)
         self._keyboard = keyboard.Controller()
-
-    def _move(self, point: Point) -> None:
-        """Declared in interactions.universals.py"""
-        self._mouse.position = point
-
-    def _click(self, point: Point | tuple[int, int], *, num_clicks: int = 1, pre_delay: int | float = 0, post_delay: int | float = 0.005) -> None:
-        """Declared in interactions.universals.py"""
-        # execute pre-delay
-        time.sleep(pre_delay)
-
-        if type(point) is not Point:
-            point = Point(*point)
-
-        self._move(point)
-        self._mouse.click(num_clicks)
-
-        # execute post-delay
-        time.sleep(post_delay)

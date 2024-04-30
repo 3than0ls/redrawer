@@ -32,6 +32,8 @@ class Cursor:
         # but the class utilizes @property so the user will only know relative cursor position (relative to window)
         self._cursor_pos: Point
 
+        self._held = False
+
     @property
     def position(self) -> Point:
         """Returns mouse cursor position relative to paint window."""
@@ -54,6 +56,26 @@ class Cursor:
     def click(self, num_clicks: int = 1) -> None:
         """Click the left mouse button once. Optionally specify number of clicks, defaults to one."""
         self._mouse.click(pynmouse.Button.left, num_clicks)
+
+    def hold(self, *, initial_position: None | Point = None) -> None:
+        """Hold left click button until .release() is called. Does nothing if already being held."""
+        if self._held:
+            return
+        else:
+            self._held = True
+            if initial_position is not None:
+                self.position = initial_position
+            self._mouse.press(pynmouse.Button.left)
+
+    def release(self, *, initial_position: None | Point = None) -> None:
+        """Release left click button, assuming hold() has already been called. Does nothing if mouse is already released."""
+        if not self._held:
+            return
+        else:
+            self._held = False
+            if initial_position is not None:
+                self.position = initial_position
+            self._mouse.release(pynmouse.Button.left)
 
 
 if __name__ == '__main__':
