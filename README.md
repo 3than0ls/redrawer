@@ -1,4 +1,4 @@
-# Drawer-2.0
+# Redrawer
 
 Recreate images in MS-paint. An upgraded version of my drawer project, which had the same purpose.
 
