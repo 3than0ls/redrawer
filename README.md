@@ -4,7 +4,7 @@ Recreate images in MS-paint. An upgraded version of my drawer project, which had
 
 ## Description
 
-Write.
+Write how it works.
 
 ## Getting Started
 

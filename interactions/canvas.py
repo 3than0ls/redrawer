@@ -3,6 +3,9 @@ from interactions.universals import UniversalInteractionsHeader
 from interactions.constants import CANVAS_TOP_LEFT
 
 
+# define invalid point class
+
+
 class CanvasInteractions(UniversalInteractionsHeader):
     def __init__(self) -> None:
         super().__init__()
@@ -15,12 +18,18 @@ class CanvasInteractions(UniversalInteractionsHeader):
         """Click on the canvas relative to the top left of the canvas section of the window."""
         self._click(self._transform_point_to_canvas(point))
 
-    def canvas_drag(self, point1: Point, point2: Point) -> None:
-        """Hold and drag the cursor from `point1` to `point2` on the canvas."""
+    def canvas_drag(self, start_point: Point, end_point: Point) -> None:
+        """Hold and drag the cursor from `start_point` to `end_point` on the canvas."""
         self._mouse.hold(
-            initial_position=self._transform_point_to_canvas(point1))
+            initial_position=self._transform_point_to_canvas(start_point))
         self._mouse.release(
-            initial_position=self._transform_point_to_canvas(point2))
+            initial_position=self._transform_point_to_canvas(end_point))
+
+    def canvas_drag_to(self, end_point: Point) -> None:
+        """Hold and drag the cursor from last cursor location to `end_point` on the canvas."""
+        self._mouse.hold()
+        self._mouse.release(
+            initial_position=self._transform_point_to_canvas(end_point))
 
     # TODO: add a get max canvas size function, based on bottom and right padding constants
     # perhaps make it a part of the manager?
