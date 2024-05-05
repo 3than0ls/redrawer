@@ -1,5 +1,0 @@
-pillow==10.3.0
-pynput==1.7.6
-pywin32==306
-setuptools==69.2.0
-six==1.16.0
