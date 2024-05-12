@@ -1,4 +1,5 @@
 from cursor import Point
+from image_processing import Palette
 from interactions.universals import UniversalInteractionsHeader
 from dataclasses import dataclass
 import interactions.constants as C
@@ -52,7 +53,8 @@ class ToolbarInteractions(UniversalInteractionsHeader):
         self._color_selected = _ColorSelected(row, col)
         self._click(self._color_selected.cursor_position())
 
-    def set_palette(self, palette: "Palette") -> None:
+    def set_palette(self, palette: Palette) -> None:
+        # TODO: Set palette
         pass
 
     def _ensure_resize_fits(self, width: int, height: int) -> bool:

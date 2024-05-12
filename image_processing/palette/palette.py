@@ -2,12 +2,13 @@ from collections import namedtuple
 import json
 from pathlib import Path
 from PIL import Image
+import numpy as np
 
 
 RGB = namedtuple("RGB", ["red", "green", "blue"], defaults=[0, 0, 0])
 
 
-with open(Path('./image_processing/default_palette.json')) as f:
+with open(Path(r'.\image_processing\palette\default_palette.json')) as f:
     # all colors in RGB tuple
     _default_palette = []
 
@@ -17,7 +18,6 @@ with open(Path('./image_processing/default_palette.json')) as f:
             _default_palette[i].append(RGB(*rgb))
 
 
-print(_default_palette)
 # flattened version of _default_palette
 DEFAULT_PALETTE = [rgb for row in _default_palette for rgb in row]
 
@@ -27,6 +27,10 @@ class Palette:
     Palette may vary from image to image, but always have a base of the default palette. Hence this class.
     Palette property is structured like this: 
     A 3x10 2D list where it's seperated into 2 or 3 rows (depending on if the full palette has been initialized) and 10 columns
+
+    Create a palette with extra colors from an image by initializing and passing in output from get_image_colors.most_frequent_distinct_RGB
+
+    It would have been better to use a dataclass to represent this but we're too far in.
     """
 
     def __init__(self, extra_colors: list[RGB] | None = None) -> None:
@@ -40,11 +44,23 @@ class Palette:
 
     @property
     def shape(self) -> tuple[int, int]:
+        """The shape of the palette list, either 3 rows 10 cols or 2 rows 10 cols."""
         return (len(self._palette[0]), len(self._palette))
 
     @property
+    def num_colors(self) -> int:
+        """Return the number of colors in the palette"""
+        return sum([1 for _ in self.flattened_palette])
+
+    @property
     def palette(self) -> list[list[RGB]]:
+        """Represents the RGB colors in a row-column fashion as they would appear on ms-paint."""
         return self._palette
+
+    @property
+    def flattened_palette(self) -> list[RGB]:
+        """Return a list of all RGB lists from the self.palette"""
+        return [rgb for row in self._palette for rgb in row]
 
     def show_in_image(self) -> None:
         """Creates a temporary image that shows the color palette. Typically used for testing purposes"""
