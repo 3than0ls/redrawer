@@ -62,6 +62,19 @@ class Palette:
         """Return a list of all RGB lists from the self.palette"""
         return [rgb for row in self._palette for rgb in row]
 
+    def asarray(self) -> np.ndarray:
+        """Convert Palette object (Flattened palette specifically) to a low level Numpy array"""
+        palette_arr = np.zeros(
+            shape=(
+                self.num_colors, 3
+            )
+        )
+
+        for i, rgb in enumerate(self.flattened_palette):
+            palette_arr[i] = np.asarray(rgb, dtype=np.uint8)
+
+        return palette_arr
+
     def show_in_image(self) -> None:
         """Creates a temporary image that shows the color palette. Typically used for testing purposes"""
         scale = 100

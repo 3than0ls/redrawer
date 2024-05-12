@@ -1,12 +1,14 @@
 from math import sqrt
 from image_processing.palette.palette import RGB, DEFAULT_PALETTE
 import numpy as np
+from numba import njit
 
 
 # All functions having to do with color distance, whether the colors are near each other, or if colors are distinct
 
 
-def color_distance(source: RGB, compare: RGB) -> int:
+@njit(fastmath=True)
+def color_distance(source: np.ndarray, compare: np.ndarray) -> int:
     """Utilizes the low-cost approximation algorithm found here:
     https://www.compuphase.com/cmetric.htm
 
@@ -16,10 +18,10 @@ def color_distance(source: RGB, compare: RGB) -> int:
     We're iterating over every row, and then over every column, and then over every column, and then, applying this algorithm to every color pixel.
     Looking to optimize with Numba
     """
-    mean_red = (source.red + compare.red) / 2
-    red_diff = source.red - compare.red
-    green_diff = source.green - compare.green
-    blue_diff = source.blue - compare.blue
+    mean_red = (source[0] + compare[0]) / 2
+    red_diff = source[0] - compare[0]
+    green_diff = source[1] - compare[1]
+    blue_diff = source[2] - compare[2]
     return int(sqrt(
         (512 + mean_red) * red_diff * red_diff +
         4 * green_diff * green_diff +
@@ -28,10 +30,10 @@ def color_distance(source: RGB, compare: RGB) -> int:
 
 
 def is_near_color(source: RGB, compare: RGB, max_distance=50) -> bool:
-    return color_distance(source, compare) < max_distance
+    return color_distance(np.asarray(source), np.asarray(compare)) < max_distance
 
 
-# How distinct the colors generated need to be. Default value should be 50.
+# How distinct the colors generated need to be. Default value should be 500.
 # Decreasing generally produces more similar colors
 # Increasing generally produces more different colors
 DISTINCTIVENESS_VALUE = 250

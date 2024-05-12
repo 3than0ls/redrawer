@@ -1,22 +1,12 @@
 import numpy as np
+from numba import njit
 
-from image_processing.palette.palette import RGB, Palette
+from image_processing.palette.palette import Palette
 from image_processing.palette.color_distance import color_distance
 
 
-# https://numba.pydata.org/
-
-
-def _partial_call_color_distance(source_color: RGB):
-    """A partial call function for color distance."""
-    def col_dist(compare_color_rgb: np.ndarray) -> int:
-        # print(type(compare_color_rgb))
-        return color_distance(source_color, RGB(*compare_color_rgb))
-
-    return col_dist  # , otypes=[np.uint32])
-
-
-def _color_dist_matrices(image_array: np.ndarray, palette: Palette) -> np.ndarray:
+@njit(fastmath=True)
+def _color_dist_matrices(image_array: np.ndarray, palette_array: np.ndarray) -> np.ndarray:
     """
     Return the color distance matrices
     Final matrix will be of shape (Image Rows x Image Cols x Palette's Num Colors)   <-- DO THIS
@@ -26,23 +16,22 @@ def _color_dist_matrices(image_array: np.ndarray, palette: Palette) -> np.ndarra
     _color_dists = np.zeros(
         shape=(
             *image_array.shape[:2],  # for every pixel
-            palette.num_colors,  # for every color
+            palette_array.shape[0],  # for every color
         ),
         dtype=np.uint32
     )
 
-    for color_num, rgb in enumerate(palette.flattened_palette):
-        func = _partial_call_color_distance(rgb)
+    for color_num, source_rgb in enumerate(palette_array):
         for row, pixel_row in enumerate(image_array):
             for col, pixel_rgb in enumerate(pixel_row):
-                _color_dists[row, col, color_num] = func(pixel_rgb)
+                _color_dists[row, col, color_num] = color_distance(
+                    source_rgb, pixel_rgb)
         print('finished color', color_num)
 
-    print(_color_dists)
-    print(_color_dists.shape)
     return _color_dists
 
 
+@njit(fastmath=True)
 def _merge_color_matrices(image_array: np.ndarray, color_dists: np.ndarray) -> np.ndarray:
     """
     Merge all the color distance matrices into one image matrix.
@@ -50,27 +39,28 @@ def _merge_color_matrices(image_array: np.ndarray, color_dists: np.ndarray) -> n
     """
     image_matrix = np.zeros(
         shape=(
-            *image_array.shape,   # row , col of the pixel in the image
-            2    # row, col of the color in palette
-        )
+            *image_array.shape[:2],   # row , col of the pixel in the image
+            2   # row, col of the palette
+        ), dtype=np.uint8
     )
 
-    def _get_index(col_dist_arr: np.ndarray):
-        ind = np.argmin(col_dist_arr)
-        # return the row and column, calculated mathematically
-        return np.array((ind // 10, ind % 10), dtype=np.uint8)
+    for row, color_dists_row in enumerate(color_dists):
+        for col, color_dists in enumerate(color_dists_row):
+            ind = np.argmin(color_dists)
+            # set to the row and column, calculated mathematically
+            image_matrix[row, col] = np.asarray((ind // 10, ind % 10))
+            # image_matrix[row][col] = ind
 
-    image_matrix = np.apply_along_axis(_get_index, 2, color_dists)
     print(image_matrix)
-    print(image_matrix.shape)
+    print('finished merging color distance matrices')
     return image_matrix
 
 
 def create_image(image_array: np.ndarray, palette: Palette) -> np.ndarray:
-    color_matrices = _color_dist_matrices(image_array, palette)
-    np.save('temp', color_matrices)
+    """Create a new image from an original image array based off of color palette colors."""
+    color_dist_matrices = _color_dist_matrices(image_array, palette.asarray())
 
-    # color_matrices = np.load('temp.npy')
-    palette_color_array = _merge_color_matrices(image_array, color_matrices)
+    palette_color_array = _merge_color_matrices(
+        image_array, color_dist_matrices)
 
     return palette_color_array
