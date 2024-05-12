@@ -30,6 +30,7 @@ def color_distance(source: np.ndarray, compare: np.ndarray) -> int:
 
 
 def is_near_color(source: RGB, compare: RGB, max_distance=50) -> bool:
+    """Returns true if the source RGB and compare RGB are less than a certain `max_distance` away from each other using `color_distance`."""
     return color_distance(np.asarray(source), np.asarray(compare)) < max_distance
 
 

@@ -7,6 +7,7 @@ from numba import njit
 
 @njit
 def _translate_palette_indices_to_rgb(palette_image_array: np.ndarray, palette_array: np.ndarray) -> np.ndarray:
+    """Translates an Numpy array of palette indices (used for drawing directions) to an RGB image array."""
     image_matrix = np.ones(
         shape=(
             # row , col of the pixel in the image
@@ -27,6 +28,8 @@ def _translate_palette_indices_to_rgb(palette_image_array: np.ndarray, palette_a
 
 
 def show_image_from_palette_array(palette_image_array: np.ndarray, palette: Palette) -> None:
+    """Translates a numpy array of palette indices (used for drawing directions) to an RGB image array, then converts it to an actual image using PIL and shows it. 
+    Used only for seeing what the drawing directions should draw, without having it done."""
     img_arr = _translate_palette_indices_to_rgb(
         palette_image_array, palette.asarray())
 
