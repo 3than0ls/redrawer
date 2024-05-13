@@ -26,7 +26,7 @@ def _color_dist_matrices(image_array: np.ndarray, palette_array: np.ndarray) -> 
             for col, pixel_rgb in enumerate(pixel_row):
                 _color_dists[row, col, color_num] = color_distance(
                     source_rgb, pixel_rgb)
-        print('finished color', color_num)
+        # print('finished color', color_num)
 
     return _color_dists
 
@@ -51,8 +51,8 @@ def _merge_color_matrices(image_array: np.ndarray, color_dists: np.ndarray) -> n
             image_matrix[row, col] = np.asarray((ind // 10, ind % 10))
             # image_matrix[row][col] = ind
 
-    print(image_matrix)
-    print('finished merging color distance matrices')
+    # print(image_matrix)
+    # print('finished merging color distance matrices')
     return image_matrix
 
 

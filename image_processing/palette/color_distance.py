@@ -4,13 +4,35 @@ import numpy as np
 from numba import njit
 
 
+# Different ways of calculating distinctiveness value:
+# Calculate the color distance between every single pixel, and average that
+# Optimize this by reducing the resolution to a low amount
+
+
+# What kind of color distance method to use, either "redmean", "euclidean", or others soon to be added. Different methods produce different results.
+COLOR_DISTANCE_METHOD = "redmean"
+
+# How distinct the colors generated need to be. Default value should be 500.
+# Decreasing generally produces more similar colors
+# Increasing generally produces more different colors
+DISTINCTIVENESS_VALUE = {
+    "redmean": 500,
+    "euclidean": 10
+}[COLOR_DISTANCE_METHOD]
+
+# Search through only PARTITION_KTH of the most frequent colors to find distinct colors to add to the palette.
+# Smaller the number, faster the distinct colors are found.
+# Best not to touch
+PARTITION_KTH = 5000
+
+
 # All functions having to do with color distance, whether the colors are near each other, or if colors are distinct
 
-
 @njit(fastmath=True)
-def color_distance(source: np.ndarray, compare: np.ndarray) -> int:
+def _redmean_color_distance(source: np.ndarray, compare: np.ndarray) -> int:
     """Utilizes the low-cost approximation algorithm found here:
     https://www.compuphase.com/cmetric.htm
+    https://en.wikipedia.org/wiki/Color_difference -> "redmean"
 
     This algorithm will run for every pixel in the image, for every palette color (20 or 30). 
     Since the palette color is a constant... technically the whole process is only O(n) where n is the number of pixels...
@@ -29,18 +51,32 @@ def color_distance(source: np.ndarray, compare: np.ndarray) -> int:
     ))
 
 
-def is_near_color(source: RGB, compare: RGB, max_distance=50) -> bool:
+@njit(fastmath=True)
+def _euclid_color_distance(source: np.ndarray, compare: np.ndarray) -> int:
+    """Basic Euclidean color distance using a standard distance formula."""
+    red_diff = source[0] - compare[0]
+    green_diff = source[1] - compare[1]
+    blue_diff = source[2] - compare[2]
+    return int(sqrt(red_diff * red_diff + green_diff * green_diff + blue_diff * blue_diff))
+
+
+@njit(fastmath=True)
+def color_distance(source: np.ndarray, compare: np.ndarray) -> int:
+    """Returns the color distance between RGB ndarray source and RGB ndarray compare. Uses the color distance method given."""
+    match COLOR_DISTANCE_METHOD:
+        case "redmean":
+            c_dist_func = _redmean_color_distance
+        case "euclidean":
+            c_dist_func = _euclid_color_distance
+        case _:
+            raise TypeError(
+                "Invalid COLOR_DISTANCE_METHOD for is_near_color function. Please provide a correct color distance function.")
+    return c_dist_func(np.asarray(source), np.asarray(compare))
+
+
+def is_near_color(source: RGB, compare: RGB, max_distance) -> bool:
     """Returns true if the source RGB and compare RGB are less than a certain `max_distance` away from each other using `color_distance`."""
     return color_distance(np.asarray(source), np.asarray(compare)) < max_distance
-
-
-# How distinct the colors generated need to be. Default value should be 500.
-# Decreasing generally produces more similar colors
-# Increasing generally produces more different colors
-DISTINCTIVENESS_VALUE = 250
-
-# Search through only PARTITION_KTH of the most frequent colors to find distinct colors to add to the palette.
-PARTITION_KTH = 250
 
 
 def most_frequent_distinct_RGB(image_array: np.ndarray, num_colors: int = 10) -> list[RGB]:
