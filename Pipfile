@@ -8,6 +8,7 @@ pynput = "*"
 pywin32 = "*"
 pillow = "*"
 numba = "*"
+scikit-image = "*"
 
 [dev-packages]
 

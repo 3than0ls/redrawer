@@ -2,7 +2,7 @@ from pathlib import Path
 from PIL import Image
 import numpy as np
 from image_processing.palette.color_distance import most_frequent_distinct_RGB
-from image_processing.palette.palette import DEFAULT_PALETTE, Palette, RGB
+from image_processing.palette.palette import Palette
 
 
 def open_image(path: Path) -> np.ndarray:
