@@ -19,13 +19,14 @@ COLOR_DISTANCE_METHOD = "deltaE"
 DISTINCTIVENESS_VALUE = {
     "redmean": 500,    # default around 500
     "euclidean": 10,   # default around 10
-    "deltaE": 10        # default around 10
+    "deltaE": 10       # default around 10
 }[COLOR_DISTANCE_METHOD]
 
 # Search through only PARTITION_KTH of the most frequent colors to find distinct colors to add to the palette.
 # Smaller the number, faster the distinct colors are found.
+# But after using NJIT, searching for distinct colors isn't terribly time consuming, at least compared to the color matrices
 # Best not to touch
-PARTITION_KTH = 5000
+PARTITION_KTH = 9000
 
 
 # All functions having to do with color distance, whether the colors are near each other, or if colors are distinct

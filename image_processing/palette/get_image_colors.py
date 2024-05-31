@@ -3,11 +3,15 @@ from PIL import Image
 import numpy as np
 from image_processing.palette.color_distance import most_frequent_distinct_RGB
 from image_processing.palette.palette import Palette
+from image_processing.image.resize import resize_to_monitor
 
 
-def open_image(path: Path) -> np.ndarray:
-    """Open an image and convert it into a Numpy array of shape width x height x RGB."""
+def open_image(path: Path, resize=True) -> np.ndarray:
+    """Open an image and convert it into a Numpy array of shape width x height x RGB. If `resize` is set to true, then also resize it to be smaller than the active monitor."""
     img = Image.open(path, formats=["PNG", "JPEG"]).convert('RGB')
+    if resize:
+        img = resize_to_monitor(img)
+
     array = np.asarray(img, dtype=np.uint8)
     # array = np.asarray(img, dtype=np.int32)
     return array

@@ -1,3 +1,13 @@
+"""
+This technically doesn't need to be a part of the Redrawer program, but is rather used to inspect the outputs from image processing without the lengthy task of drawing it out on ms-paint.
+
+The process is as follows:
+    1) [all of from_image process]
+    2) Translate the output matrix of palette indices to RGB
+    3) (if called) show the image
+
+"""
+
 
 from image_processing.palette.palette import RGB, Palette
 import numpy as np
@@ -27,7 +37,7 @@ def _translate_palette_indices_to_rgb(palette_image_array: np.ndarray, palette_a
     return image_matrix
 
 
-def show_image_from_palette_array(palette_image_array: np.ndarray, palette: Palette) -> None:
+def show_image(palette_image_array: np.ndarray, palette: Palette) -> None:
     """Translates a numpy array of palette indices (used for drawing directions) to an RGB image array, then converts it to an actual image using PIL and shows it. 
     Used only for seeing what the drawing directions should draw, without having it done."""
     img_arr = _translate_palette_indices_to_rgb(
