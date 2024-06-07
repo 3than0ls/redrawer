@@ -28,7 +28,7 @@ from image_processing.palette.palette import Palette
 from image_processing.palette.color_distance import color_distance
 
 
-_PRINT_PROGRESS = True
+_PRINT_PROGRESS = False
 
 
 @njit(fastmath=True)
