@@ -1,9 +1,13 @@
 from pathlib import Path
 from PIL import Image
+from dotenv import dotenv_values
 import numpy as np
 from image_processing.palette.color_distance import most_frequent_distinct_RGB
 from image_processing.palette.palette import Palette
 from image_processing.image.resize import resize_to_monitor
+
+
+SHOW_PALETTE = dotenv_values("settings.env")["SHOW_PALETTE"]
 
 
 def open_image(path: Path, resize=True) -> np.ndarray:
@@ -20,4 +24,7 @@ def open_image(path: Path, resize=True) -> np.ndarray:
 def create_palette(image_array: np.ndarray) -> Palette:
     """Create a full palette from an numpy image array. Does this by determining all distinct colors from the numpy array."""
     extra_colors = most_frequent_distinct_RGB(image_array)
-    return Palette(extra_colors)
+    palette = Palette(extra_colors)
+    if SHOW_PALETTE:
+        palette.show_in_image()
+    return palette
