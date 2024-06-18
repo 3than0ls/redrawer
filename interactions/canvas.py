@@ -1,4 +1,4 @@
-from cursor import Point
+from interactions.cursor import Point
 from interactions.universals import UniversalInteractionsHeader
 from interactions.constants import CANVAS_TOP_LEFT
 

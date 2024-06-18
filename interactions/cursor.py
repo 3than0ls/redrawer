@@ -1,5 +1,5 @@
 import time
-from window import PaintWindow, BoundingRect
+from interactions.window import PaintWindow, BoundingRect
 import pynput.mouse as pynmouse
 from collections import namedtuple
 

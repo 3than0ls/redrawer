@@ -1,9 +1,9 @@
-from cursor import Point
+from interactions.cursor import Point
 from image_processing import Palette
 from interactions.universals import UniversalInteractionsHeader
 from dataclasses import dataclass
 import interactions.constants as C
-from window import BoundingRect
+from interactions.window import BoundingRect
 from pynput.keyboard import Key
 
 

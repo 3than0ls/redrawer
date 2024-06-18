@@ -1,5 +1,5 @@
-from window import PaintWindow, BoundingRect
-from cursor import Cursor, Point
+from interactions.window import PaintWindow, BoundingRect
+from interactions.cursor import Cursor, Point
 from pynput import keyboard
 import interactions.constants as C
 import time

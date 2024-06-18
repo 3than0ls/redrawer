@@ -1,5 +1,5 @@
-from window import PaintWindow, BoundingRect
-from cursor import Cursor, Point
+from interactions.window import PaintWindow, BoundingRect
+from interactions.cursor import Cursor, Point
 from interactions.toolbar import ToolbarInteractions
 from interactions.canvas import CanvasInteractions
 from pynput import keyboard
