@@ -2,6 +2,7 @@ from math import sqrt
 from image_processing.palette.palette import RGB, DEFAULT_PALETTE
 import numpy as np
 from numba import njit
+from dotenv import dotenv_values
 
 # Different ways of calculating distinctiveness value:
 # Calculate the color distance between every single pixel, and average that
@@ -11,8 +12,10 @@ from numba import njit
 # What kind of color distance method to use, either "redmean", "euclidean", "deltaE", and potentially others. Different methods produce different results.
 # See below functions to view exactly how different methods are implemented and what they're based off of.
 # deltaE takes the longest (complex calculations) but produces best results
-COLOR_DISTANCE_METHOD = "deltaE"
+COLOR_DISTANCE_METHOD = dotenv_values("settings.env")["COLOR_DISTANCE_METHOD"]
 
+
+# constant constants, aka don't touch
 # How distinct the colors generated need to be. Default value should be 500.
 # Decreasing generally produces more similar colors
 # Increasing generally produces more different colors
@@ -20,7 +23,7 @@ DISTINCTIVENESS_VALUE = {
     "redmean": 500,    # default around 500
     "euclidean": 10,   # default around 10
     "deltaE": 10       # default around 10
-}[COLOR_DISTANCE_METHOD]
+}[COLOR_DISTANCE_METHOD]  # type: ignore
 
 # Search through only PARTITION_KTH of the most frequent colors to find distinct colors to add to the palette.
 # Smaller the number, faster the distinct colors are found.

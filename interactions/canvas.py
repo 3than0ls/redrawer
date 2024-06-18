@@ -3,9 +3,6 @@ from interactions.universals import UniversalInteractionsHeader
 from interactions.constants import CANVAS_TOP_LEFT
 
 
-# define invalid point class
-
-
 class CanvasInteractions(UniversalInteractionsHeader):
     def __init__(self) -> None:
         super().__init__()

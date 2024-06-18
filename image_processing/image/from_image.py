@@ -26,9 +26,10 @@ import numpy as np
 from numba import njit
 from image_processing.palette.palette import Palette
 from image_processing.palette.color_distance import color_distance
+from dotenv import dotenv_values
 
 
-_PRINT_PROGRESS = False
+_PRINT_PROGRESS = dotenv_values("settings.env")["PRINT_ALL_PROGRESS"]
 
 
 @njit(fastmath=True)

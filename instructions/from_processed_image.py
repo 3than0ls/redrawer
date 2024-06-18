@@ -22,20 +22,21 @@ import dbm
 import concurrent.futures
 from image_processing.palette import Palette
 from pathlib import Path
+from dotenv import dotenv_values
+
+_settings = dotenv_values("settings.env")
+_PRINT_PROGRESS = _settings["PRINT_ALL_PROGRESS"]
 
 
-_PRINT_PROGRESS = True
-
-
-INSTRUCTION_TYPE = "BASIC"
+INSTRUCTION_TYPE = _settings["INSTRUCTION_TYPE"]
 
 INSTRUC_MARKER = {
     "BASIC": "redrawer-basic-instruction"
-}[INSTRUCTION_TYPE]
+}[INSTRUCTION_TYPE]  # type: ignore
 
 
-TEMP_DIR = Path.cwd() / "temp"
-TEMP_FPATH = TEMP_DIR / "redrawer_instruction"
+TEMP_DIR: Path = Path.cwd() / _settings["TEMP_DIR"]  # type: ignore
+TEMP_FPATH: Path = TEMP_DIR / _settings["TEMP_FNAME"]  # type: ignore
 
 
 def from_processed_image(processed_image: np.ndarray, palette: Palette):
