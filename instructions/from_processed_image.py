@@ -13,18 +13,14 @@ dbm (https://docs.python.org/3/library/dbm.html#module-dbm) where instructions a
 Functional programming because numba will greatly increase the speed it takes to create it.
 
 INSTRUCTION SYNTAX:
-Key: [PaletteColorRow,PaletteColorCol]
-Value: (the instructions with the following syntax)
-    (x1,y1,length1)|(x2,y2,length2)|...|(xX,yX,lengthX)
+....
 
 """
 
 import numpy as np
-from numba import njit
 import dbm
 import concurrent.futures
-import time
-from image_processing.palette.palette import Palette
+from image_processing.palette import Palette
 from pathlib import Path
 
 
@@ -75,14 +71,38 @@ def from_processed_image(processed_image: np.ndarray, palette: Palette):
             future.add_done_callback(add_to_dbm)
 
 
-# njit something
 def _compute_instructions_for_palette_color(processed_image: np.ndarray, palette_color: tuple):
     """Like the name says, compute the instructions for a palette color.
     Just to remember: the processed_image doesn't consist of colors, but rather the [row, column] positions of colors in palette_color. We're searching for palette_color in processed_image
+
+    Instruction syntax: [x,y,length];[x2,y2,length2]
+
     """
-    key = f"{palette_color[0]}, {palette_color[1]}"
-    instruc = "SOMETHING SOMETHING"
-    time.sleep(1)
+    key = f"{palette_color[0]},{palette_color[1]}"
+    instruc = ""
+
+    for x, row in enumerate(processed_image):
+        tracking = False
+        cur_pos = tuple()
+        cur_length = 1
+
+        for y, color in enumerate(row):
+            is_correct_color = color[0] == palette_color[0] and color[1] == palette_color[1]
+            if is_correct_color and not tracking:
+                cur_pos = (x, y)
+                tracking = True
+            elif is_correct_color and tracking:
+                cur_length += 1
+            elif not is_correct_color and tracking:
+                tracking = False
+                instruc += f"[{cur_pos[0]},{cur_pos[1]},{cur_length}];"
+                # reset
+                cur_pos = tuple()
+                cur_length = 1
+
+        # there might be some leftover buffered, add it
+        if tracking:
+            instruc += f"[{cur_pos[0]}.{cur_pos[1]},{cur_length}];"
 
     return (key, instruc)
 
