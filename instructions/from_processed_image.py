@@ -25,13 +25,13 @@ from pathlib import Path
 from dotenv import dotenv_values
 
 _settings = dotenv_values("settings.env")
-_PRINT_PROGRESS = _settings["PRINT_ALL_PROGRESS"]
+_PRINT_PROGRESS = _settings["PRINT_ALL_PROGRESS"] == "true"
 
 
 INSTRUCTION_TYPE = _settings["INSTRUCTION_TYPE"]
 
 INSTRUC_MARKER = {
-    "BASIC": "redrawer-basic-instruction"
+    "basic": "redrawer-basic-instruction"
 }[INSTRUCTION_TYPE]  # type: ignore
 
 

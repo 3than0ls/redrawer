@@ -29,7 +29,7 @@ from image_processing.palette.color_distance import color_distance
 from dotenv import dotenv_values
 
 
-_PRINT_PROGRESS = dotenv_values("settings.env")["PRINT_ALL_PROGRESS"]
+_PRINT_PROGRESS = dotenv_values("settings.env")["PRINT_ALL_PROGRESS"] == "true"
 
 
 @njit(fastmath=True)
