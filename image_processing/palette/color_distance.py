@@ -140,7 +140,8 @@ def most_frequent_distinct_RGB(image_array: np.ndarray, num_colors: int = 10) ->
 
     # next, find the 20 most frequent unique values (with their counts) on axis 0 (prevents flattening the last dimension)
     values, counts = np.unique(flattened, return_counts=True, axis=0)
-    ind = np.argpartition(-counts, kth=PARTITION_KTH)[:PARTITION_KTH]
+    ind = np.argpartition(-counts, kth=min(len(counts)-1,  # set max partitions to the settings.env specified or the maximum supported by the image
+                          PARTITION_KTH))[:PARTITION_KTH]
 
     # seperate out colors that are non-distinct. Since the default palette is guaranteed to be there, make them all distinctive colors.
     # segregate default palette colors and custom distinctive colors, and apply different weights
