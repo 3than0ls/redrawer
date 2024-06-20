@@ -7,5 +7,5 @@ def resize_to_monitor(image: Image) -> Image:
     """Resize the image to fit in the smallest monitor on the system."""
     min_size = sorted(get_monitors(), key=lambda m: m.width * m.height)[0]
 
-    image.thumbnail((min_size.width * 0.8, min_size.height * 0.8))
+    image.thumbnail((min_size.width * 0.75, min_size.height * 0.75))
     return image
