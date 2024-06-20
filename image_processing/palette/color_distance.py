@@ -131,7 +131,7 @@ def is_near_color(source: RGB, compare: RGB, max_distance) -> bool:
 
 def most_frequent_distinct_RGB(image_array: np.ndarray, num_colors: int = 10) -> list[RGB]:
     """A multi-step process that flattens the image array, identifies the most frequent colors, filters through them using `is_color_near` to ensure the colors are distinct enough, then returns that filtered list of RGB values."""
-    PROGRESS_LOG.info(
+    PROGRESS_LOG.log(
         "GETTING INPUT IMAGE'S MOST FREQUENT COLORS TO CREATE PALETTE (may take a minute)")
 
     # first, flatten the 2D array of pixel data to a 1D array of pixel data

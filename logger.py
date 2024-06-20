@@ -1,20 +1,22 @@
 import logging
+import datetime
 from dotenv import dotenv_values
 
-to_log_or_not_to_log = logging.INFO if dotenv_values(
-    "settings.env")["PRINT_ALL_PROGRESS"] == "true" else logging.CRITICAL
+
+class Log:
+    def __init__(self):
+        self._enabled = logging.INFO if dotenv_values(
+            "settings.env")["PRINT_ALL_PROGRESS"] == "true" else logging.CRITICAL
+
+        self._start = datetime.datetime.now()
+
+    def _ms_elapsed(self) -> int:
+        """Return roughly the number of milliseconds elapsed between the start of the log and the time this method is called."""
+        return (self._start - datetime.datetime.now()).microseconds // 1000
+
+    def log(self, message: str):
+        """Log a message with specific formatting"""
+        print(f"[ {self._ms_elapsed():0>10} ] ::  LOG  :: {message}")
 
 
-PROGRESS_LOG = logging.getLogger("PROGRESS")
-PROGRESS_LOG.setLevel(to_log_or_not_to_log)
-
-_ch = logging.StreamHandler()
-_ch.setLevel(to_log_or_not_to_log)
-
-_formatter = logging.Formatter(
-    fmt='[ %(relativeCreated)08d ] :: %(message)s',
-    datefmt='%Y-%m-%d,%H:%M:%S'
-)
-
-_ch.setFormatter(_formatter)
-PROGRESS_LOG.addHandler(_ch)
+PROGRESS_LOG = Log()

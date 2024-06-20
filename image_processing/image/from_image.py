@@ -80,7 +80,7 @@ def create_processed_image(image_array: np.ndarray, palette: Palette) -> np.ndar
     """Create a new image from an original image array based off of color palette colors."""
     color_dist_matrices = _color_dist_matrices(image_array, palette.asarray())
 
-    PROGRESS_LOG.info(
+    PROGRESS_LOG.log(
         "MERGING COLOR MATRICES TO DETERMINE MINIMUM COLOR DISTANCE")
     palette_color_array = _merge_color_matrices(
         image_array, color_dist_matrices)

@@ -52,7 +52,7 @@ class _BasicRedrawer:
                     continue
                 row, col = key.decode().split(',')  # type: ignore
 
-                PROGRESS_LOG.info(f"Selecting color at {row}, {col} to execute {len(
+                PROGRESS_LOG.log(f"Selecting color at {row}, {col} to execute {len(
                     instrucs[key])} worth of redrawing instructions {x+1}/{len(ordered_drawing_keys)}")
 
                 self._interactions_manager.set_color(int(row), int(col))
@@ -81,7 +81,7 @@ class Redrawer:
 
         # show_image(self._processed_img, self._palette)
 
-        PROGRESS_LOG.info("INITIALIZING PAINT WINDOW")
+        PROGRESS_LOG.log("INITIALIZING PAINT WINDOW")
         self._window = PaintWindow()
         self._window.initialize_window()
         self._interactions_manager = InteractionsManager(self._window)
@@ -116,6 +116,6 @@ class Redrawer:
 
     def redraw(self) -> None:
         """The core function that executes everything."""
-        PROGRESS_LOG.info("SETTING UP PAINT WINDOW AND CANVAS")
+        PROGRESS_LOG.log("SETTING UP PAINT WINDOW AND CANVAS")
         self._setup()
         self._drawer.redraw(self._order_drawing_keys())
