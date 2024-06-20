@@ -92,7 +92,7 @@ def _merge_color_matrices(image_array: np.ndarray, color_dists: np.ndarray) -> n
     return image_matrix
 
 
-def create_image(image_array: np.ndarray, palette: Palette) -> np.ndarray:
+def create_processed_image(image_array: np.ndarray, palette: Palette) -> np.ndarray:
     """Create a new image from an original image array based off of color palette colors."""
     color_dist_matrices = _color_dist_matrices(image_array, palette.asarray())
 

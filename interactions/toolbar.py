@@ -1,3 +1,4 @@
+from image_processing.palette.palette import RGB
 from interactions.cursor import Point
 from image_processing import Palette
 from interactions.universals import UniversalInteractionsHeader
@@ -49,13 +50,25 @@ class ToolbarInteractions(UniversalInteractionsHeader):
         # tracks what color is selected from the palette
         self._color_selected = _ColorSelected()
 
-    def _set_color(self, row: int, col: int) -> None:
+    def set_color(self, row: int, col: int) -> None:
         self._color_selected = _ColorSelected(row, col)
-        self._click(self._color_selected.cursor_position())
+        self._click(self._color_selected.cursor_position(),
+                    pre_delay=C.TOOLBAR_LONG_DELAY, post_delay=C.TOOLBAR_LONG_DELAY)
 
     def set_palette(self, palette: Palette) -> None:
-        # TODO: Set palette
-        pass
+        for rgb in palette.palette[2]:
+            self.create_palette_color(rgb)
+
+    def create_palette_color(self, rgb: RGB) -> None:
+        self._click(C.EDIT_COLORS_BUTTON, post_delay=C.TOOLBAR_LONG_DELAY/2)
+        self._click(C.EDIT_COLORS_MENU_RED, num_clicks=2)
+        self._keyboard.type(str(rgb.red))
+        self._click(C.EDIT_COLORS_MENU_GREEN, num_clicks=2)
+        self._keyboard.type(str(rgb.green))
+        self._click(C.EDIT_COLORS_MENU_BLUE, num_clicks=2)
+        self._keyboard.type(str(rgb.blue))
+        self._click(C.EDIT_COLORS_MENU_ADD)
+        self._click(C.EDIT_COLORS_MENU_OK)
 
     def _ensure_resize_fits(self, width: int, height: int) -> bool:
         """Ensure resize is not greater than the size of the screen, or _window_rect. For this, we'll use constant paddings. 
@@ -72,7 +85,7 @@ class ToolbarInteractions(UniversalInteractionsHeader):
         if not self._ensure_resize_fits(width, height):
             raise ResizeNotFitWindowError(width, height, self._bounding_rect)
 
-        self._click(C.RESIZE_BUTTON, pre_delay=C.TOOLBAR_DROPDOWN_DELAY)
+        self._click(C.RESIZE_BUTTON, pre_delay=C.TOOLBAR_LONG_DELAY)
         self._click(C.RESIZE_MENU_PIXELS)
         self._click(C.RESIZE_MENU_MAINTAIN_ASPECT)
         self._click(C.RESIZE_MENU_H, num_clicks=2)
@@ -117,9 +130,9 @@ class ToolbarInteractions(UniversalInteractionsHeader):
             raise ValueError(
                 f"Brush type {brush_type} is not a valid brush type.")
 
-        self._click(C.BRUSH_TYPE_BUTTON, pre_delay=C.TOOLBAR_DROPDOWN_DELAY)
+        self._click(C.BRUSH_TYPE_BUTTON, pre_delay=C.TOOLBAR_LONG_DELAY)
         self._click(C.BRUSH_TYPES[brush_type],
-                    pre_delay=C.TOOLBAR_DROPDOWN_DELAY)
+                    pre_delay=C.TOOLBAR_LONG_DELAY)
 
     def set_stroke_size(self, size_number: int) -> None:
         """Set stroke size to size `size_number`, where `size_number` is the size between 1 and 4 in the dropdown menu when clicking the Size button."""
@@ -127,6 +140,6 @@ class ToolbarInteractions(UniversalInteractionsHeader):
             raise ValueError(
                 f"Stroke size {size_number} is not a valid. Must be between 1 and 4 (inclusive).")
 
-        self._click(C.STROKE_SIZE_BUTTON, pre_delay=C.TOOLBAR_DROPDOWN_DELAY)
+        self._click(C.STROKE_SIZE_BUTTON, pre_delay=C.TOOLBAR_LONG_DELAY)
         self._click(C.STROKE_SIZES[str(size_number)],
-                    pre_delay=C.TOOLBAR_DROPDOWN_DELAY)
+                    pre_delay=C.TOOLBAR_LONG_DELAY)

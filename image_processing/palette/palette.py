@@ -26,8 +26,7 @@ class Palette:
     """
     Palette may vary from image to image, but always have a base of the default palette. Hence this class.
     Palette property is structured like this: 
-    A 3x10 2D list where it's seperated into 2 or 3 rows (depending on if the full palette has been initialized) and 10 columns
-
+    A 3x10 2D list
     Create a palette with extra colors from an image by initializing and passing in output from get_image_colors.most_frequent_distinct_RGB
 
     It would have been better to use a dataclass to represent this but we're too far in.

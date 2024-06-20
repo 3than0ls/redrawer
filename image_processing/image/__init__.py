@@ -5,4 +5,4 @@
 # show_image_from_palette_array is a tool that shows what the image will look like before it's drawn
 
 from image_processing.image.to_image import show_image
-from image_processing.image.from_image import create_image
+from image_processing.image.from_image import create_processed_image

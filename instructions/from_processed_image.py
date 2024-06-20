@@ -39,16 +39,17 @@ TEMP_DIR: Path = Path.cwd() / _settings["TEMP_DIR"]  # type: ignore
 TEMP_FPATH: Path = TEMP_DIR / _settings["TEMP_FNAME"]  # type: ignore
 
 
-def from_processed_image(processed_image: np.ndarray, palette: Palette):
+def from_processed_image(processed_image: np.ndarray, palette: Palette) -> Path:
     """
     Turn a processed image into a DBM file with string instructions the `TEMP_INSTRUC_FNAME` name to be used later. See file docstring for the syntax of these "instructions"
+    Returns Path object to the path of the DBM file
     """
 
     if _PRINT_PROGRESS:
         print(f'--- PROCESSING IMAGE TO INSTRUCTIONS ---')
 
     TEMP_DIR.mkdir(exist_ok=True)
-    with dbm.open(str(TEMP_FPATH), 'n') as _:
+    with dbm.open(TEMP_FPATH, 'n') as _:
         # create a new empty DB to get rid of old one (if existing)
         pass
 
@@ -58,7 +59,7 @@ def from_processed_image(processed_image: np.ndarray, palette: Palette):
         if _PRINT_PROGRESS:
             print(f'-- FINISHED PROCESSING PALETTE COLOR AT ({key}) --')
 
-        with dbm.open(str(TEMP_FPATH), 'w') as db:
+        with dbm.open(TEMP_FPATH, 'w') as db:
             db[key] = instruc_value
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -71,12 +72,15 @@ def from_processed_image(processed_image: np.ndarray, palette: Palette):
         for future in futures:
             future.add_done_callback(add_to_dbm)
 
+    return TEMP_FPATH
+
 
 def _compute_instructions_for_palette_color(processed_image: np.ndarray, palette_color: tuple):
     """Like the name says, compute the instructions for a palette color.
     Just to remember: the processed_image doesn't consist of colors, but rather the [row, column] positions of colors in palette_color. We're searching for palette_color in processed_image
 
     Instruction syntax: [x,y,length];[x2,y2,length2]
+    Length is going x direction.
 
     """
     key = f"{palette_color[0]},{palette_color[1]}"
@@ -96,18 +100,13 @@ def _compute_instructions_for_palette_color(processed_image: np.ndarray, palette
                 cur_length += 1
             elif not is_correct_color and tracking:
                 tracking = False
-                instruc += f"[{cur_pos[0]},{cur_pos[1]},{cur_length}];"
+                instruc += f"[{cur_pos[1]},{cur_pos[0]},{cur_length}];"
                 # reset
                 cur_pos = tuple()
                 cur_length = 1
 
         # there might be some leftover buffered, add it
         if tracking:
-            instruc += f"[{cur_pos[0]}.{cur_pos[1]},{cur_length}];"
+            instruc += f"[{cur_pos[1]},{cur_pos[0]},{cur_length}];"
 
     return (key, instruc)
-
-
-if __name__ == '__main__':
-    with dbm.open(str(TEMP_FPATH), 'r') as db:
-        print(db.keys())

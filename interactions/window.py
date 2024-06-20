@@ -2,6 +2,7 @@ from pathlib import Path
 import subprocess
 import json
 import time
+from dotenv import dotenv_values
 import win32gui
 import win32con
 import win32api
@@ -41,10 +42,9 @@ class PaintWindow:
 
     _DEV = True
 
-    def __init__(self, paint_path: Path | None = None) -> None:
-        if paint_path is None:
-            with open(r'settings.json') as f:
-                self._paint_path = Path(json.load(f)['paint_path'])
+    def __init__(self) -> None:
+        """Represents the ms-paint window specified from PAINT_PATH in settings.env"""
+        self._paint_path = dotenv_values("settings.env")["PAINT_PATH"]
 
         # self._paint_window: gw.Win32Window
         self._paint_window_hwnd: int
@@ -100,7 +100,8 @@ class PaintWindow:
 
     def initialize_window(self) -> None:
         """Utilize subprocess.Popen to start ms-paint. Opens path found in `settings.json['paint_path']`. Waits 0.25 seconds before attempting to find the Paint window."""
-        subprocess.Popen(['cmd', '/c', 'start', '/max', self._paint_path])
+        subprocess.Popen(['cmd', '/c', 'start', '/max',
+                         self._paint_path])  # type: ignore
         time.sleep(PaintWindow.ACTION_DELAY)
         self._paint_window_hwnd = self._get_window()
 

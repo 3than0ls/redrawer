@@ -7,7 +7,7 @@ from image_processing.palette.palette import Palette
 from image_processing.image.resize import resize_to_monitor
 
 
-SHOW_PALETTE = dotenv_values("settings.env")["SHOW_PALETTE"]
+SHOW_PALETTE = dotenv_values("settings.env")["SHOW_PALETTE"] == "true"
 
 
 def open_image(path: Path, resize=True) -> np.ndarray:

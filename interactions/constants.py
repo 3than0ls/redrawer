@@ -6,7 +6,8 @@ with open(Path('./interactions/interaction_points.json')) as f:
     INTERACTION_POINTS = IP = json.load(f)
 
 # ----- Delays -----
-TOOLBAR_DROPDOWN_DELAY = 0.4
+TOOLBAR_LONG_DELAY = 0.4
+DEFAULT_DELAY = 0.00002
 
 
 # ----- Toolbar related constants -----
@@ -48,6 +49,16 @@ BRUSH_TYPES: dict[str, tuple[int, int]] = TOOLBAR["brushes"]["menu"]
 # --- Stroke
 STROKE_SIZE_BUTTON: tuple[int, int] = TOOLBAR["stroke_size"]["button"]
 STROKE_SIZES: dict[str, tuple[int, int]] = TOOLBAR["stroke_size"]["menu"]
+
+# --- Edit colors
+EDIT_COLORS_BUTTON: tuple[int, int] = TOOLBAR["edit_colors"]["button"]
+EDIT_COLORS_MENU_RED: tuple[int, int] = TOOLBAR["edit_colors"]["menu"]["red"]
+EDIT_COLORS_MENU_GREEN: tuple[int,
+                              int] = TOOLBAR["edit_colors"]["menu"]["green"]
+EDIT_COLORS_MENU_BLUE: tuple[int, int] = TOOLBAR["edit_colors"]["menu"]["blue"]
+EDIT_COLORS_MENU_ADD: tuple[int,
+                            int] = TOOLBAR["edit_colors"]["menu"]["add_to_custom"]
+EDIT_COLORS_MENU_OK: tuple[int, int] = TOOLBAR["edit_colors"]["menu"]["ok"]
 
 
 # ----- Canvas related constants -----
