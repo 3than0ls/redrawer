@@ -130,10 +130,3 @@ class PaintWindow:
         rect = BoundingRect(
             *win32api.GetMonitorInfo(monitor_handle)['Work'])
         return rect
-
-
-if __name__ == '__main__':
-    p = PaintWindow()
-    p.initialize_window()
-    p.modify()
-    print(p.window_rect())

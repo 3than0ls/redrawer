@@ -4,6 +4,8 @@ import numpy as np
 from numba import njit
 from dotenv import dotenv_values
 
+from logger import PROGRESS_LOG
+
 # Different ways of calculating distinctiveness value:
 # Calculate the color distance between every single pixel, and average that
 # Optimize this by reducing the resolution to a low amount
@@ -29,7 +31,7 @@ DISTINCTIVENESS_VALUE = {
 # Smaller the number, faster the distinct colors are found.
 # But after using NJIT, searching for distinct colors isn't terribly time consuming, at least compared to the color matrices
 # Best not to touch
-PARTITION_KTH = 9000
+PARTITION_KTH = 7000
 
 
 # All functions having to do with color distance, whether the colors are near each other, or if colors are distinct
@@ -129,6 +131,9 @@ def is_near_color(source: RGB, compare: RGB, max_distance) -> bool:
 
 def most_frequent_distinct_RGB(image_array: np.ndarray, num_colors: int = 10) -> list[RGB]:
     """A multi-step process that flattens the image array, identifies the most frequent colors, filters through them using `is_color_near` to ensure the colors are distinct enough, then returns that filtered list of RGB values."""
+    PROGRESS_LOG.info(
+        "GETTING INPUT IMAGE'S MOST FREQUENT COLORS TO CREATE PALETTE (may take a minute)")
+
     # first, flatten the 2D array of pixel data to a 1D array of pixel data
     # see: https://stackoverflow.com/a/26553855
     flattened = image_array.reshape(-1, image_array.shape[-1])

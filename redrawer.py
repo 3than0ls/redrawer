@@ -11,6 +11,8 @@ from instructions import from_processed_image
 from interactions import PaintWindow, InteractionsManager, Point
 from dotenv import dotenv_values
 
+from logger import PROGRESS_LOG
+
 
 INSTRUCTION_TYPE = dotenv_values("settings.env")["INSTRUCTION_TYPE"]
 
@@ -45,13 +47,14 @@ class _BasicRedrawer:
     def redraw(self, ordered_drawing_keys: list["dbm._KeyType"]) -> None:
         """Basic redrawing function for basic redrawing"""
         with dbm.open(self._instruc_path, 'r') as instrucs:
-            print(ordered_drawing_keys)
-            for key in ordered_drawing_keys:
+            for x, key in enumerate(ordered_drawing_keys):
                 if not instrucs[key].decode():  # skip any colors that have no instructions
                     continue
                 row, col = key.decode().split(',')  # type: ignore
-                print("selecting", row, col, "to do", len(
-                    instrucs[key]), "worth of instrucs")
+
+                PROGRESS_LOG.info(f"Selecting color at {row}, {col} to execute {len(
+                    instrucs[key])} worth of redrawing instructions {x+1}/{len(ordered_drawing_keys)}")
+
                 self._interactions_manager.set_color(int(row), int(col))
                 self._redraw_one_color(instrucs[key].decode())
 
@@ -78,6 +81,7 @@ class Redrawer:
 
         # show_image(self._processed_img, self._palette)
 
+        PROGRESS_LOG.info("INITIALIZING PAINT WINDOW")
         self._window = PaintWindow()
         self._window.initialize_window()
         self._interactions_manager = InteractionsManager(self._window)
@@ -112,5 +116,6 @@ class Redrawer:
 
     def redraw(self) -> None:
         """The core function that executes everything."""
+        PROGRESS_LOG.info("SETTING UP PAINT WINDOW AND CANVAS")
         self._setup()
         self._drawer.redraw(self._order_drawing_keys())

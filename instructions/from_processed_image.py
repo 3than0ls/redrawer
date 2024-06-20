@@ -24,6 +24,8 @@ from image_processing.palette import Palette
 from pathlib import Path
 from dotenv import dotenv_values
 
+from logger import PROGRESS_LOG
+
 _settings = dotenv_values("settings.env")
 _PRINT_PROGRESS = _settings["PRINT_ALL_PROGRESS"] == "true"
 
@@ -45,8 +47,7 @@ def from_processed_image(processed_image: np.ndarray, palette: Palette) -> Path:
     Returns Path object to the path of the DBM file
     """
 
-    if _PRINT_PROGRESS:
-        print(f'--- PROCESSING IMAGE TO INSTRUCTIONS ---')
+    PROGRESS_LOG.info("PROCESSING IMAGE TO INSTRUCTIONS")
 
     TEMP_DIR.mkdir(exist_ok=True)
     with dbm.open(TEMP_FPATH, 'n') as _:
@@ -56,8 +57,7 @@ def from_processed_image(processed_image: np.ndarray, palette: Palette) -> Path:
     def add_to_dbm(future: concurrent.futures.Future) -> None:
         key, instruc_value = future.result()
 
-        if _PRINT_PROGRESS:
-            print(f'-- FINISHED PROCESSING PALETTE COLOR AT ({key}) --')
+        PROGRESS_LOG.info(f"PROCESSED PALETTE COLOR AT ({key})")
 
         with dbm.open(TEMP_FPATH, 'w') as db:
             db[key] = instruc_value
