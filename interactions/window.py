@@ -99,7 +99,7 @@ class PaintWindow:
         self._check_monitor_dpi_aware()
 
     def initialize_window(self) -> None:
-        """Utilize subprocess.Popen to start ms-paint. Opens path found in `settings.json['paint_path']`. Waits 0.25 seconds before attempting to find the Paint window."""
+        """Utilize subprocess.Popen to start ms-paint. Opens path found in `settings.env`. Waits 0.25 seconds before attempting to find the Paint window."""
         subprocess.Popen(['cmd', '/c', 'start', '/max',
                          self._paint_path])  # type: ignore
         time.sleep(PaintWindow.ACTION_DELAY)

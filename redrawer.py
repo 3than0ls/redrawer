@@ -23,11 +23,12 @@ class ImagePathError(Exception):
 
 class _BasicRedrawer:
     def __init__(self, interactions_manager: InteractionsManager, instruc_path: Path):
+        """Redrawing process for basic redrawing method."""
         self._interactions_manager = interactions_manager
         self._instruc_path = instruc_path
 
     def _redraw_one_color(self, color_instrucs: str) -> None:
-        """Instruction syntax: [x,y,length];[x2,y2,length2]"""
+        """The redrawing of exactly one color, meaning a bunch of clicks and drags."""
         # note the splice [:-1] to get rid of the last "empty" element
         for instruc in color_instrucs.split(";")[:-1]:
             # remove the surrounding braces and split by delimeter
@@ -42,6 +43,7 @@ class _BasicRedrawer:
                     Point(x, y), Point(x+length, y))
 
     def redraw(self, ordered_drawing_keys: list["dbm._KeyType"]) -> None:
+        """Basic redrawing function for basic redrawing"""
         with dbm.open(self._instruc_path, 'r') as instrucs:
             print(ordered_drawing_keys)
             for key in ordered_drawing_keys:
@@ -55,13 +57,15 @@ class _BasicRedrawer:
 
 
 class Redrawer:
-    def __init__(self, source_image_path: Path, output_name: str | None = None):
+    def __init__(self, source_image_path: Path):
+        """The main class of the entire program, responsible for wrapping all the different components together and redrawing the output.
+        `source_image_path` is the path of your input image.
+        Draws it in ms-paint (a length process), then saves the file in the same location as the input with '_redrawer' appended onto input image name as it's file name.
+        """
         self._validate_image_path(source_image_path)
 
         self._source_path = source_image_path
-        output_name = output_name if output_name is not None else (
-            self._source_path.name + "_redrawer")
-
+        output_name = self._source_path.name + "_redrawer"
         self._output_path = self._source_path.parent / (output_name + ".png")
 
         # the "meat" of the code
@@ -82,11 +86,13 @@ class Redrawer:
             self._interactions_manager, self._instruc_path)   # instruc path is not correct
 
     def _validate_image_path(self, path: Path):
+        """Validate the image path, raise an error otherwise."""
         if not path.exists or not path.is_file() or path.suffix.lower() not in [".png", ".jpeg", ".jpg"]:
             raise ImagePathError(path)
 
     def _order_drawing_keys(self) -> list:
-        """Sorts the keys by length of their corresponding instructions"""
+        """Returns the sorted instruction keys by length of their corresponding instructions. 
+        Intended to produce a drawing order where the most frequent colors are drawn first, without having to parse THEN count instructions."""
         data = []
         with dbm.open(self._instruc_path, 'r') as instrucs:
             for key in instrucs.keys():
@@ -105,5 +111,6 @@ class Redrawer:
         self._interactions_manager.set_palette(self._palette)
 
     def redraw(self) -> None:
+        """The core function that executes everything."""
         self._setup()
         self._drawer.redraw(self._order_drawing_keys())

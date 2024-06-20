@@ -47,19 +47,22 @@ class ToolbarInteractions(UniversalInteractionsHeader):
     def __init__(self) -> None:
         super().__init__()
 
-        # tracks what color is selected from the palette
+        # tracks what color is currently selected from the palette
         self._color_selected = _ColorSelected()
 
     def set_color(self, row: int, col: int) -> None:
+        """Sets the current color from the palette, based on row/col."""
         self._color_selected = _ColorSelected(row, col)
         self._click(self._color_selected.cursor_position(),
                     pre_delay=C.TOOLBAR_LONG_DELAY, post_delay=C.TOOLBAR_LONG_DELAY)
 
     def set_palette(self, palette: Palette) -> None:
+        """Creates palette colors for the custom colors of a palette."""
         for rgb in palette.palette[2]:
             self.create_palette_color(rgb)
 
     def create_palette_color(self, rgb: RGB) -> None:
+        """Creates a palette color for a given RGB"""
         self._click(C.EDIT_COLORS_BUTTON, post_delay=C.TOOLBAR_LONG_DELAY/2)
         self._click(C.EDIT_COLORS_MENU_RED, num_clicks=2)
         self._keyboard.type(str(rgb.red))

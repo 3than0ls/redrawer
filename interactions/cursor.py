@@ -2,7 +2,6 @@ import os
 import time
 from interactions.window import PaintWindow, BoundingRect
 import pynput.mouse as pynmouse
-import pynput.keyboard as keyboard
 from collections import namedtuple
 
 Point = namedtuple("Point", ["x", "y"])
@@ -35,14 +34,6 @@ class Cursor:
         self._cursor_pos: Point
 
         self._held = False
-
-        # add a failsafe to allow control if needed to stop; triggers when 'Esc' is pressed
-        def failsafe(key):
-            if key == keyboard.Key.esc:
-                print('HARD QUITTING')
-                os._exit(1)
-        listener = keyboard.Listener(on_press=failsafe)
-        listener.start()
 
     @property
     def position(self) -> Point:
