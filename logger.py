@@ -1,6 +1,5 @@
 import logging
 import datetime
-import time
 from dotenv import dotenv_values
 
 
