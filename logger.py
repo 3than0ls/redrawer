@@ -1,5 +1,6 @@
 import logging
 import datetime
+import time
 from dotenv import dotenv_values
 
 
@@ -12,7 +13,7 @@ class Log:
 
     def _ms_elapsed(self) -> int:
         """Return roughly the number of milliseconds elapsed between the start of the log and the time this method is called."""
-        return (self._start - datetime.datetime.now()).microseconds // 1000
+        return int((datetime.datetime.now() - self._start).total_seconds() * 1000)
 
     def log(self, message: str):
         """Log a message with specific formatting"""
