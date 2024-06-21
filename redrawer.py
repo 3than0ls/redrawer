@@ -12,10 +12,12 @@ from dotenv import dotenv_values
 from logger import PROGRESS_LOG
 
 
-INSTRUCTION_TYPE = dotenv_values("settings.env")["INSTRUCTION_TYPE"]
-SHOW_PALETTE = dotenv_values("settings.env")["SHOW_PALETTE"] == "true"
-SHOW_PROCESSED_IMAGE = dotenv_values(
-    "settings.env")["SHOW_PROCESSED_IMAGE"] == "true"
+_settings = dotenv_values("settings.env")
+INSTRUCTION_TYPE = _settings["INSTRUCTION_TYPE"]
+SHOW_PALETTE = _settings["SHOW_PALETTE"] == "true"
+SHOW_PROCESSED_IMAGE = _settings["SHOW_PROCESSED_IMAGE"] == "true"
+BRUSH_TYPE = _settings["BRUSH_TYPE"]
+STROKE_SIZE = _settings["STROKE_SIZE"]
 
 
 class ImagePathError(Exception):
@@ -46,6 +48,8 @@ class _BasicRedrawer:
             x = int(x)
             y = int(y)
             length = int(length)
+            # if smallest stroke size, clicking simply will not draw anything for some odd reason. Thus, we have to drag at least one px, thus add one in length
+            length += 1 if STROKE_SIZE == 1 else 0
             if length == 1:
                 self._interactions_manager.canvas_click(Point(x, y))
             else:
@@ -71,7 +75,6 @@ class _BasicRedrawer:
 
 
 class Redrawer:
-
     def __init__(self, source_image_path: Path):
         """The main class of the entire program, responsible for wrapping all the different components together and redrawing the output.
         `source_image_path` is the path of your input image.
@@ -110,6 +113,11 @@ class Redrawer:
         self._interactions_manager = InteractionsManager(self._window)
         self._drawer = _BasicRedrawer(
             self._interactions_manager, self._instruc_path)
+
+        # set up some canvas settings
+        self._interactions_manager.set_brush(BRUSH_TYPE)  # type: ignore
+        self._interactions_manager.set_stroke_size(
+            int(STROKE_SIZE))  # type: ignore
 
     def _validate_image_path(self, path: Path):
         """Validate the image path, raise an error otherwise."""
