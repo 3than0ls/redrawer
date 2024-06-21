@@ -7,9 +7,6 @@ from image_processing.palette.palette import Palette
 from image_processing.image.resize import resize_to_monitor
 
 
-SHOW_PALETTE = dotenv_values("settings.env")["SHOW_PALETTE"] == "true"
-
-
 def open_image(path: Path, resize=True) -> np.ndarray:
     """Open an image and convert it into a Numpy array of shape width x height x RGB. If `resize` is set to true, then also resize it to be smaller than the active monitor."""
     img = Image.open(path, formats=["PNG", "JPEG"]).convert('RGB')
@@ -25,6 +22,4 @@ def create_palette(image_array: np.ndarray) -> Palette:
     """Create a full palette from an numpy image array. Does this by determining all distinct colors from the numpy array."""
     extra_colors = most_frequent_distinct_RGB(image_array)
     palette = Palette(extra_colors)
-    if SHOW_PALETTE:
-        palette.show_in_image()
     return palette

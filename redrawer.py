@@ -2,10 +2,8 @@
 
 import dbm
 from pathlib import Path
-import time
 
-from image_processing import create_palette, open_image, create_processed_image
-from image_processing.image.to_image import show_image
+from image_processing import create_palette, open_image, create_processed_image, show_image
 from instructions import from_processed_image
 
 from interactions import PaintWindow, InteractionsManager, Point
@@ -15,6 +13,9 @@ from logger import PROGRESS_LOG
 
 
 INSTRUCTION_TYPE = dotenv_values("settings.env")["INSTRUCTION_TYPE"]
+SHOW_PALETTE = dotenv_values("settings.env")["SHOW_PALETTE"] == "true"
+SHOW_PROCESSED_IMAGE = dotenv_values(
+    "settings.env")["SHOW_PROCESSED_IMAGE"] == "true"
 
 
 class ImagePathError(Exception):
@@ -23,11 +24,18 @@ class ImagePathError(Exception):
             source_image_path}\" either does not exist or is not a valid image type (PNG, JPG)")
 
 
+# as different redrawer types are created, it should most definitely be split up into seperate files and it's own module
 class _BasicRedrawer:
     def __init__(self, interactions_manager: InteractionsManager, instruc_path: Path):
-        """Redrawing process for basic redrawing method."""
+        """Redrawing process for basic redrawing method. To be "injected" into the main Redrawer."""
         self._interactions_manager = interactions_manager
         self._instruc_path = instruc_path
+
+    def _redraw_first_color(self) -> None:
+        """A special redrawing method for the most frequent color, rather than drag drawing, buckets the canvas. Assumes correct color is selected"""
+        self._interactions_manager.click_bucket()
+        self._interactions_manager.canvas_click(Point(5, 5))
+        self._interactions_manager.set_brush("brush")
 
     def _redraw_one_color(self, color_instrucs: str) -> None:
         """The redrawing of exactly one color, meaning a bunch of clicks and drags."""
@@ -47,47 +55,61 @@ class _BasicRedrawer:
     def redraw(self, ordered_drawing_keys: list["dbm._KeyType"]) -> None:
         """Basic redrawing function for basic redrawing"""
         with dbm.open(self._instruc_path, 'r') as instrucs:
-            for x, key in enumerate(ordered_drawing_keys):
-                if not instrucs[key].decode():  # skip any colors that have no instructions
-                    continue
+            for cur_color_num, key in enumerate(ordered_drawing_keys):
                 row, col = key.decode().split(',')  # type: ignore
-
-                PROGRESS_LOG.log(f"Selecting color at {row}, {col} to execute {len(
-                    instrucs[key])} worth of redrawing instructions {x+1}/{len(ordered_drawing_keys)}")
-
                 self._interactions_manager.set_color(int(row), int(col))
-                self._redraw_one_color(instrucs[key].decode())
+
+                if cur_color_num == 0:  # first color, assuming ordered correctly, should be the most frequent, thus we can just bucket it
+                    self._redraw_first_color()
+                    continue
+
+                PROGRESS_LOG.log(f"Selecting color at {row}, {col} to execute ~{len(
+                    instrucs[key])} worth of redrawing instructions ({cur_color_num+1}/{len(ordered_drawing_keys)})")
+
+                if instrucs[key].decode():  # skips any colors that have no instructions
+                    self._redraw_one_color(instrucs[key].decode())
 
 
 class Redrawer:
+
     def __init__(self, source_image_path: Path):
         """The main class of the entire program, responsible for wrapping all the different components together and redrawing the output.
         `source_image_path` is the path of your input image.
         Draws it in ms-paint (a length process), then saves the file in the same location as the input with '_redrawer' appended onto input image name as it's file name.
         """
         self._validate_image_path(source_image_path)
-
         self._source_path = source_image_path
         output_name = self._source_path.name + "_redrawer"
         self._output_path = self._source_path.parent / (output_name + ".png")
 
-        # the "meat" of the code
-        self._img = open_image(source_image_path)
+        self._compute_instructions()
+
+        if SHOW_PALETTE:
+            self._palette.show_in_image()
+        if SHOW_PROCESSED_IMAGE:
+            show_image(self._processed_img, self._palette)
+
+        self._initialize_drawer()
+
+    def _compute_instructions(self):
+        """Set up and initialize components that support/calculate the instructions. Needs to be called before _initialize_drawer. 
+        Outputs instructions to be used in the DBM found at `self._instruc_path`"""
+        self._img = open_image(self._source_path)
         self._palette = create_palette(self._img)
         self._processed_img = create_processed_image(self._img, self._palette)
         # will be the same as the combined path found in settings.env
         self._instruc_path = from_processed_image(
             self._processed_img, self._palette)
 
-        # show_image(self._processed_img, self._palette)
-
+    def _initialize_drawer(self):
+        """Set up and initialize copmonents supporting the drawer (what interacts with the canvas). Needs to be called after _compute_instructions.
+         Required `self._instruc_path` and corresponding DBM is created correctly."""
         PROGRESS_LOG.log("INITIALIZING PAINT WINDOW")
         self._window = PaintWindow()
         self._window.initialize_window()
         self._interactions_manager = InteractionsManager(self._window)
-
         self._drawer = _BasicRedrawer(
-            self._interactions_manager, self._instruc_path)   # instruc path is not correct
+            self._interactions_manager, self._instruc_path)
 
     def _validate_image_path(self, path: Path):
         """Validate the image path, raise an error otherwise."""
@@ -100,7 +122,7 @@ class Redrawer:
         data = []
         with dbm.open(self._instruc_path, 'r') as instrucs:
             for key in instrucs.keys():
-                data.append((key, len(instrucs[key])))
+                data.append((key, len(instrucs[key].split(b";"))))
 
         # sort by length of instructions
         return [key for (key, _) in sorted(data, key=lambda d: d[1], reverse=True)]

@@ -55,6 +55,9 @@ class ToolbarInteractions(UniversalInteractionsHeader):
         self._color_selected = _ColorSelected(row, col)
         self._click(self._color_selected.cursor_position(),
                     pre_delay=C.TOOLBAR_LONG_DELAY, post_delay=C.TOOLBAR_LONG_DELAY)
+        # click it again, with all the delays, just to make sure it happens
+        self._click(self._color_selected.cursor_position(),
+                    pre_delay=C.TOOLBAR_LONG_DELAY, post_delay=C.TOOLBAR_LONG_DELAY)
 
     def set_palette(self, palette: Palette) -> None:
         """Creates palette colors for the custom colors of a palette."""
