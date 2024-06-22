@@ -56,22 +56,25 @@ class _BasicRedrawer:
                 self._interactions_manager.canvas_drag(
                     Point(x, y), Point(x+length, y))
 
-    def redraw(self, ordered_drawing_keys: list["dbm._KeyType"]) -> None:
+    def redraw(self, ordered_drawing_keys: tuple["dbm._KeyType"]) -> None:
         """Basic redrawing function for basic redrawing"""
         with dbm.open(self._instruc_path, 'r') as instrucs:
             for cur_color_num, key in enumerate(ordered_drawing_keys):
                 row, col = key.decode().split(',')  # type: ignore
+                PROGRESS_LOG.log(f"Selecting color at {row}, {col} to execute ~{len(
+                    instrucs[key])} worth of redrawing instructions ({cur_color_num+1}/{len(ordered_drawing_keys)})")
+
+                # skips any colors that have no instructions
+                if not instrucs[key].decode():
+                    continue
+
                 self._interactions_manager.set_color(int(row), int(col))
 
                 if cur_color_num == 0:  # first color, assuming ordered correctly, should be the most frequent, thus we can just bucket it
                     self._redraw_first_color()
                     continue
 
-                PROGRESS_LOG.log(f"Selecting color at {row}, {col} to execute ~{len(
-                    instrucs[key])} worth of redrawing instructions ({cur_color_num+1}/{len(ordered_drawing_keys)})")
-
-                if instrucs[key].decode():  # skips any colors that have no instructions
-                    self._redraw_one_color(instrucs[key].decode())
+                self._redraw_one_color(instrucs[key].decode())
 
 
 class Redrawer:
@@ -124,16 +127,19 @@ class Redrawer:
         if not path.exists or not path.is_file() or path.suffix.lower() not in [".png", ".jpeg", ".jpg"]:
             raise ImagePathError(path)
 
-    def _order_drawing_keys(self) -> list:
+    def _order_drawing_keys(self) -> tuple:
         """Returns the sorted instruction keys by length of their corresponding instructions. 
-        Intended to produce a drawing order where the most frequent colors are drawn first, without having to parse THEN count instructions."""
+        Intended to produce a drawing order where the most frequent colors are drawn first, without having to parse THEN count instructions.
+        Because of how palette works and blah blah, the first custom color (2, 0) is guaranteed to be the most common (amongst the custom colors) which usually means it's the most common out of all.
+        """
         data = []
         with dbm.open(self._instruc_path, 'r') as instrucs:
             for key in instrucs.keys():
-                data.append((key, len(instrucs[key].split(b";"))))
+                if key != b"2,0":
+                    data.append((key, len(instrucs[key].split(b";"))))
 
         # sort by length of instructions
-        return [key for (key, _) in sorted(data, key=lambda d: d[1], reverse=True)]
+        return (b"2,0", *[key for (key, _) in sorted(data, key=lambda d: d[1], reverse=True)])
 
     def _setup(self) -> None:
         """Set up the the toolbar and canvas so redrawing goes without issues."""
