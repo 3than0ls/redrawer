@@ -65,16 +65,25 @@ class ToolbarInteractions(UniversalInteractionsHeader):
             self.create_palette_color(rgb)
 
     def create_palette_color(self, rgb: RGB) -> None:
-        """Creates a palette color for a given RGB"""
+        """Creates a palette color for a given RGB. Note that EDIT_COLORS_MENU constants are relative to center of screen."""
+        rect = self._window.window_rect()
+        center_x = rect.width//2
+        center_y = rect.height//2
+
         self._click(C.EDIT_COLORS_BUTTON, post_delay=C.TOOLBAR_LONG_DELAY/2)
-        self._click(C.EDIT_COLORS_MENU_RED, num_clicks=2)
+        self._click(Point(center_x + C.EDIT_COLORS_MENU_RED[0],
+                          center_y+C.EDIT_COLORS_MENU_RED[1]), num_clicks=2)
         self._keyboard.type(str(rgb.red))
-        self._click(C.EDIT_COLORS_MENU_GREEN, num_clicks=2)
+        self._click(Point(center_x + C.EDIT_COLORS_MENU_GREEN[0],
+                          center_y+C.EDIT_COLORS_MENU_GREEN[1]), num_clicks=2)
         self._keyboard.type(str(rgb.green))
-        self._click(C.EDIT_COLORS_MENU_BLUE, num_clicks=2)
+        self._click(Point(center_x + C.EDIT_COLORS_MENU_BLUE[0],
+                          center_y+C.EDIT_COLORS_MENU_BLUE[1]), num_clicks=2)
         self._keyboard.type(str(rgb.blue))
-        self._click(C.EDIT_COLORS_MENU_ADD)
-        self._click(C.EDIT_COLORS_MENU_OK)
+        self._click(Point(center_x + C.EDIT_COLORS_MENU_ADD[0],
+                          center_y+C.EDIT_COLORS_MENU_ADD[1]))
+        self._click(Point(center_x + C.EDIT_COLORS_MENU_OK[0],
+                          center_y+C.EDIT_COLORS_MENU_OK[1]))
 
     def _ensure_resize_fits(self, width: int, height: int) -> bool:
         """Ensure resize is not greater than the size of the screen, or _window_rect. For this, we'll use constant paddings. 

@@ -1,6 +1,4 @@
-from pathlib import Path
 import subprocess
-import json
 import time
 from dotenv import dotenv_values
 import win32gui
@@ -40,7 +38,7 @@ class PaintWindow:
     ACTION_DELAY = 0.5
     WINDOW_TEXT = 'Untitled - Paint'
 
-    _DEV = True
+    _DEV = True   # DEV setting now appears to be the standard setting
 
     def __init__(self) -> None:
         """Represents the ms-paint window specified from PAINT_PATH in settings.env"""
