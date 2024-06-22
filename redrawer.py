@@ -37,7 +37,7 @@ class _BasicRedrawer:
         """A special redrawing method for the most frequent color, rather than drag drawing, buckets the canvas. Assumes correct color is selected"""
         self._interactions_manager.click_bucket()
         self._interactions_manager.canvas_click(Point(5, 5))
-        self._interactions_manager.set_brush("brush")
+        self._interactions_manager.set_brush(BRUSH_TYPE)  # type: ignore
 
     def _redraw_one_color(self, color_instrucs: str) -> None:
         """The redrawing of exactly one color, meaning a bunch of clicks and drags."""
@@ -88,14 +88,7 @@ class Redrawer:
         output_name = self._source_path.name + "_redrawer"
         self._output_path = self._source_path.parent / (output_name + ".png")
 
-        self._compute_instructions()
-
-        if SHOW_PALETTE:
-            self._palette.show_in_image()
-        if SHOW_PROCESSED_IMAGE:
-            show_image(self._processed_img, self._palette)
-
-        self._initialize_drawer()
+        self._instruc_path: Path  # to be defined later in _setup
 
     def _compute_instructions(self):
         """Set up and initialize components that support/calculate the instructions. Needs to be called before _initialize_drawer. 
@@ -111,13 +104,19 @@ class Redrawer:
         """Set up and initialize copmonents supporting the drawer (what interacts with the canvas). Needs to be called after _compute_instructions.
          Required `self._instruc_path` and corresponding DBM is created correctly."""
         PROGRESS_LOG.log("INITIALIZING PAINT WINDOW")
+        # set up paint window and interaction manager
         self._window = PaintWindow()
         self._window.initialize_window()
         self._interactions_manager = InteractionsManager(self._window)
         self._drawer = _BasicRedrawer(
             self._interactions_manager, self._instruc_path)
 
-        # set up some canvas settings
+        # set up some canvas settings and toolbar palette
+        self._interactions_manager.resize(
+            self._processed_img.shape[1],
+            self._processed_img.shape[0]
+        )
+        self._interactions_manager.set_palette(self._palette)
         self._interactions_manager.set_brush(BRUSH_TYPE)  # type: ignore
         self._interactions_manager.set_stroke_size(
             int(STROKE_SIZE))  # type: ignore
@@ -142,13 +141,15 @@ class Redrawer:
         return (b"2,0", *[key for (key, _) in sorted(data, key=lambda d: d[1], reverse=True)])
 
     def _setup(self) -> None:
-        """Set up the the toolbar and canvas so redrawing goes without issues."""
-        self._interactions_manager.resize(
-            self._processed_img.shape[1],
-            self._processed_img.shape[0]
-        )
-        self._interactions_manager.set_stroke_size(2)
-        self._interactions_manager.set_palette(self._palette)
+        """Compute instructions, then set up the the toolbar and canvas so redrawing goes without issues."""
+        self._compute_instructions()
+
+        if SHOW_PALETTE:
+            self._palette.show_in_image()
+        if SHOW_PROCESSED_IMAGE:
+            show_image(self._processed_img, self._palette)
+
+        self._initialize_drawer()
 
     def redraw(self) -> None:
         """The core function that executes everything."""
