@@ -1,9 +1,15 @@
 from pathlib import Path
 import pynput.keyboard as keyboard
 import os
+from dotenv import dotenv_values
 
 from logger import PROGRESS_LOG
 from redrawer import Redrawer
+
+# TODO:
+# Eventually add an auto-save feature
+
+INPUT_PATH = dotenv_values("settings.env")["INPUT_PATH"] or "not set"
 
 
 def main():
@@ -16,13 +22,12 @@ def main():
     listener = keyboard.Listener(on_press=failsafe)
     listener.start()
 
-    images = [r"images\test1.PNG", r"images\test2.jpg",
-              r"images\test3.jpg", r"images\test4.jpg", r"images\test5.jpg", r"images\test6.png"]
-
     PROGRESS_LOG.log(
         "Beginning program - press ESC whenever to immediately exit.")
 
-    rd = Redrawer(Path(images[0]))
+    image_path = Path(INPUT_PATH)
+
+    rd = Redrawer(image_path)
     rd.redraw()
 
 
