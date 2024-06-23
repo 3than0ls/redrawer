@@ -32,9 +32,6 @@ Redrawer recreates images by taking control of your keyboard and cursor and draw
 - Run `main.py`
 - Press `ESC` to stop the program. Especially helpful to regain control.
 
-## Video Demo
-![Video Demo](assets/video_demo.mov)
-
 ## Authors
 
 Ethan Chennault
